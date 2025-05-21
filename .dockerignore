@@ -1,0 +1,31 @@
+# Git files
+.git
+.gitignore
+
+# R project files
+.Rproj.user
+.Rhistory
+.RData
+
+# Python/preprocessing files (since we use precomputed data)
+preprocess_bert.R
+__pycache__
+*.pyc
+
+# Documentation
+README.md
+CONTRIBUTING.md
+LICENSE
+
+# Editor files
+.vscode
+.idea
+
+# Cache files
+data/cache/
+*.log
+
+# System files
+.DS_Store
+Thumbs.db
+desktop.ini
