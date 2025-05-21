@@ -115,30 +115,9 @@ server <- function(input, output, session) {
     fromJSON("data/reddit_data_anonymized.json", simplifyVector = FALSE)
   })
   
-  # point to your Python environment if needed:
-  use_condaenv("dreizehn", required = TRUE)
-  
-  # import HF pipeline
-  transformers <- import("transformers")
-  zs_classifier <- transformers$pipeline(
-    "zero-shot-classification",
-    model       = "facebook/bart-large-mnli",
-    multi_label = TRUE
-  )
-  
-  # a little helper to classify one post’s text
-  detect_components_bert <- function(text) {
-    candidate_labels <- c("claim","premise","rebuttal","concession","evidence")
-    out <- zs_classifier(text, 
-                         candidate_labels = candidate_labels)
-    # out$labels  = e.g. c("evidence","claim",…)
-    # out$scores  = matching numeric scores
-    df <- setNames(as.list(out$scores), out$labels)
-    # ensure all five labels are present
-    for(lbl in candidate_labels) if(is.null(df[[lbl]])) df[[lbl]] <- 0
-    as.data.frame(df[candidate_labels], stringsAsFactors=FALSE)
-  }
-  
+  # Initialize classifier as NULL since we're using precomputed data
+  zs_classifier <- NULL
+
   # ───────────────────────────────────────────────
   # 🧩 Check if Node (or Descendants) Contains a Delta
   # ───────────────────────────────────────────────
