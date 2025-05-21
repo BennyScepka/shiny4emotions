@@ -25,7 +25,8 @@ library(ggraph)
 library(tidygraph)
 library(purrr)
 library(stringdist)
-library(reticulate) # to choose python path
+# Commented out Python dependencies since we're using precomputed BERT data
+# library(reticulate) # to choose python path
 
 
 # Make sure radarchart is available
@@ -1055,7 +1056,6 @@ server <- function(input, output, session) {
   #               )
   #           )
   #       )
-  #   )
   # })
   
   source("user_perspective.R", local=TRUE)

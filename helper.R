@@ -5,17 +5,6 @@
 
 
 # ===============================================
-# CONDA PATH - Change to python path if needed
-# ===============================================
-
-# Set the path to your conda executable
-Sys.setenv(RETICULATE_CONDA = "C:/Users/bensc/anaconda3/Scripts/conda.exe")  # Adjust this path
-
-# Then proceed with your existing conda environment setup
-Sys.setenv(RETICULATE_PYTHON = "C:/Users/bensc/anaconda3/envs/dreizehn/python.exe")
-use_condaenv("dreizehn", required = TRUE)
-
-# ===============================================
 # CRITICAL FUNCTIONS 
 # ===============================================
 
@@ -352,47 +341,17 @@ convert_bert_format <- function(new_analysis, text_data) {
   return(old_format)
 }
 
-# Try to load data using the new format first, fall back to legacy if needed
-if (file.exists(reddit_cache_file) && file.exists(reddit_text_file)) {
-  message("Loading precomputed BERT analysis from new format...")
-  tryCatch({
-    bert_analysis <- readRDS(reddit_cache_file)
-    reddit_text_data <- readRDS(reddit_text_file)
-    
-    # Add checks for expected structure
-    if (!is.list(bert_analysis)) {
-      warning("BERT analysis is not a list structure, falling back to legacy mode")
-      precomputed_analysis <- list(
-        appeal_types = list(),
-        fallacies = list(),
-        arg_components = list(),
-        persuasion = list()
-      )
-    } else {
-      # Convert to format expected by the app
-      precomputed_analysis <- convert_bert_format(bert_analysis, reddit_text_data)
-      message("Successfully loaded and converted BERT analysis data")
-    }
-  }, error = function(e) {
-    warning(paste("Error loading BERT analysis:", e$message))
-    precomputed_analysis <- list(
-      appeal_types = list(),
-      fallacies = list(),
-      arg_components = list(),
-      persuasion = list()
-    )
-  })
+# Load precomputed data - simplified without Python dependencies
+if (file.exists(reddit_joined_file)) {
+  precomputed_analysis <- readRDS(reddit_joined_file)
+} else if (file.exists(reddit_cache_file) && file.exists(reddit_text_file)) {
+  new_analysis <- readRDS(reddit_cache_file)
+  text_data <- readRDS(reddit_text_file)
+  precomputed_analysis <- convert_bert_format(new_analysis, text_data)
 } else if (file.exists(legacy_cache_file)) {
-  message("Loading precomputed BERT analysis from legacy format...")
   precomputed_analysis <- readRDS(legacy_cache_file)
 } else {
-  warning("Precomputed BERT analysis not found! Please run preprocess_bert.R first.")
-  precomputed_analysis <- list(
-    appeal_types = list(),
-    fallacies = list(),
-    arg_components = list(),
-    persuasion = list()
-  )
+  stop("No precomputed BERT analysis found. Please ensure the data files are in the correct location.")
 }
 
 # NOW call the standardization function AFTER precomputed_analysis has been initialized

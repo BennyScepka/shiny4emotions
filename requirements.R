@@ -19,7 +19,6 @@ required_packages <- c(
   "tibble",      # Modern data frames
   "stringr",     # String manipulation
   
-  
   # Visualization - all needed
   "ggplot2",     # Plot generation
   "plotly",      # Interactive plots
@@ -49,8 +48,9 @@ required_packages <- c(
   
   # Utilities
   "digest",      # Used for caching
-  "stringdist",  # String distance calculations
-  "reticulate"   # Python interoperability
+  "stringdist"   # String distance calculations
+  # Removed reticulate since we're using precomputed BERT data
+  # "reticulate"   # Python interoperability
 )
 
 # Function to check and install missing packages
@@ -69,7 +69,7 @@ check_and_install_packages <- function() {
     # Check if all packages were successfully installed
     still_missing <- missing_packages[!(missing_packages %in% installed.packages()[, "Package"])]
     if (length(still_missing) > 0) {
-      warning("Failed to install the following packages: ", paste(still_missing, collapse = ", "))
+      warning("Failed to install some packages: ", paste(still_missing, collapse = ", "))
     }
   } else {
     message("All required packages are already installed.")
@@ -82,16 +82,5 @@ check_and_install_packages <- function() {
 # Run the check and install function
 check_and_install_packages()
 
-# Load Python environment for BERT analysis
-if (requireNamespace("reticulate", quietly = TRUE)) {
-  message("Checking Python environment for BERT analysis...")
-  tryCatch({
-    # This path will be overridden by helpers.R if needed
-    reticulate::use_condaenv("dreizehn", required = FALSE)
-    message("Python environment found. Ready for BERT analysis.")
-  }, error = function(e) {
-    message("Note: Python environment not configured. BERT analysis will use cached results only.")
-  })
-}
-
+# Remove Python environment check since we're using precomputed data
 message("Requirements check complete. Ready to launch the application.")
